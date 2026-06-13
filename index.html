@@ -352,7 +352,7 @@ function renderEvents(){
 function renderNote(){
   document.getElementById("note").innerHTML=
     `<b>Hogyan olvasd:</b> a tételek mellett a kis négyzet az <b>elosztás módját</b> jelzi. A „<b>Fűtés-elszámolás</b>” a fűtés terület-arányos regularizációja — ez ingadozik a legjobban, akár negatív is lehet. `+
-    `A grafikon fölötti színes gombokra kattintva bármelyik tétel megjeleníthető vagy elrejthető. `+
+    `<span id="noteChart" class="hide">A grafikon fölötti színes gombokra kattintva bármelyik tétel megjeleníthető vagy elrejthető. </span>`+
     `Az „<b>Egy lakásra átlagosan</b>” sor a havi közös költség osztva 44 lakással — csak tájékoztató átlag; a tényleges összeg <b>lakásonként eltér</b>, mert a szemétszállítás a bejelentett személyek számától, a fűtés-elszámolás pedig a lakás alapterületétől függ.`;
 }
 
@@ -363,6 +363,7 @@ function setView(v){view=v;
   document.getElementById("tableCard").classList.toggle("hide",v!=="table");
   document.getElementById("chartCard").classList.toggle("hide",v!=="chart");
   document.getElementById("keys").classList.toggle("hide",v!=="table");
+  document.getElementById("noteChart").classList.toggle("hide",v!=="chart");
   if(v==="table")buildTable(); else {buildChips();buildChart();}
 }
 function setUnit(a){perApt=a;
