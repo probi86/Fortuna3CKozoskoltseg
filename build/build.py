@@ -28,7 +28,7 @@ META = [
  ("Futes DIF",      ("Încălzire diferență","fűtés-elszámolás","cpi")),
  ("Lift",           ("Lift","","apt")),
  ("Administrare",   ("Administrare","","apt")),
- ("Stat de plata",  ("Stat de plată","tisztségviselők bére","apt")),
+ ("Stat de plata",  ("Stat de plată","bérek (vezetőség + takarítás)","apt")),
  ("Curatenie",      ("Curățenie","takarítás","apt")),
  ("Curatare teren", ("Curățare teren","terület-rendezés","apt")),
  ("Nagy Katalin",   ("Nagy Katalin","tömbház-felelős","apt")),
