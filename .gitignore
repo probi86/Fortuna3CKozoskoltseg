@@ -1,0 +1,8 @@
+# Privát forrásadat — SOHA ne kerüljön a publikus repóba (nevek, hátralékok)
+szamlak/
+# Generált melléktermék (az index.html-be amúgy is bele van ágyazva)
+data.json
+# Rendszer/cache
+.DS_Store
+__pycache__/
+*.pyc
