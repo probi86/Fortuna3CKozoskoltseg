@@ -122,6 +122,8 @@ svg{display:block; width:100%; height:auto; font-family:"IBM Plex Sans",sans-ser
 .note{color:var(--muted); font-size:12.5px; line-height:1.7; margin-top:18px; max-width:100ch}
 .note b{color:var(--ink); font-weight:600}
 footer{margin-top:24px; padding-top:14px; border-top:1px solid var(--line); color:var(--muted); font-size:12px}
+footer a.contact{color:var(--brass); text-decoration:none; border-bottom:1px solid rgba(179,133,47,.45)}
+footer a.contact:hover{border-bottom-color:var(--brass)}
 #cnote{position:fixed; z-index:60; pointer-events:none; background:#1a2433; color:#fff; border-radius:7px; padding:7px 10px; font-size:12px; max-width:240px; box-shadow:0 8px 22px rgba(0,0,0,.22); opacity:0; transition:opacity .1s; line-height:1.45}
 #cnote .ct{color:#ffd479; font-weight:600; margin-bottom:2px}
 .hide{display:none !important}
@@ -199,6 +201,7 @@ footer{margin-top:24px; padding-top:14px; border-top:1px solid var(--line); colo
   <footer>
     Forrás: a homefile.ro havi „Tabel cheltuieli” kimutatás (épület-szintű, lej, ÁFA-val).
     Készült: <span class="num" id="gen"></span>.
+    <br>Hasonló kimutatást szeretnél a tömbödnek? Írj: <a id="contact" class="contact" href="#"></a>
   </footer>
 </div>
 <div id="cnote" role="tooltip"></div>
@@ -416,6 +419,9 @@ document.getElementById("btnPdf").onclick=()=>window.print();
 window.addEventListener("resize",()=>{ if(view==="chart") buildChart(); });
 
 document.getElementById("gen").textContent=DATA.generated;
+(function(){ const a=document.getElementById("contact"); if(!a) return;
+  const p=["cybrrsoft","protonmail","com"], mail=p[0]+"@"+p[1]+"."+p[2];
+  a.href="mailto:"+mail; a.textContent=mail; })();
 renderKeys(); renderEvents(); renderNote(); buildTable(); wireTable(); wireChart();
 if(document.fonts&&document.fonts.ready){ document.fonts.ready.then(()=>{ if(view==="table") focusLast(); }); }
 window.addEventListener("load",()=>{ if(view==="table") focusLast(); });
