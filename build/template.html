@@ -147,10 +147,13 @@ footer{margin-top:24px; padding-top:14px; border-top:1px solid var(--line); colo
   .legendchips{ margin:0 0 6px !important }
   .scroll{ overflow:visible !important }
   thead th, tbody th, td.sum, th.sum-h, .evrow td, tfoot th, tfoot td.sum{ position:static !important; box-shadow:none !important }
-  table{ font-size:8.5px }
-  .mhead{ min-width:0; padding:4px 3px }
-  tbody td.val{ padding:4px 4px }
-  .rowlab{ min-width:0; padding:4px 6px }
+  /* a tábla a lapszélességhez igazodik (bármely tájolásban teljesen ráfér) */
+  table{ font-size:8px; width:100% !important; table-layout:fixed }
+  thead th.corner, tbody th{ width:90px }
+  th.sum-h, td.sum{ width:44px }
+  .mhead{ min-width:0 !important; padding:3px 2px }
+  tbody td.val{ min-width:0 !important; padding:3px 3px }
+  .rowlab{ min-width:0 !important; padding:3px 5px; gap:5px }
   #chartCard{ border:0; padding:0 }
   #chart{ height:130mm !important; width:100% !important }
 }
