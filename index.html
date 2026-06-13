@@ -39,6 +39,12 @@ h1{font-family:"Space Grotesk",sans-serif; font-weight:700; font-size:clamp(26px
 .seg button[aria-pressed="true"]{background:var(--panel); color:var(--ink); box-shadow:0 1px 2px rgba(0,0,0,.06)}
 .seg button:focus-visible{outline:2px solid var(--blue); outline-offset:2px}
 .hint{color:var(--muted); font-size:12.5px}
+.pdfbtn{margin-left:auto; font:inherit; font-size:13px; font-weight:500; display:inline-flex; align-items:center; gap:6px; border:1px solid var(--line); background:var(--panel); color:var(--ink); padding:7px 13px; border-radius:999px; cursor:pointer}
+.pdfbtn:hover{border-color:#cdc8bb}
+.pdfbtn svg{width:14px; height:14px; flex:none}
+.infodot{display:inline-flex; align-items:center; color:var(--muted); cursor:help; padding:2px; margin-left:-4px}
+.infodot:hover, .infodot:focus-visible{color:var(--blue); outline:none}
+.infodot svg{width:16px; height:16px}
 
 .tablecard{background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); overflow:hidden}
 .scroll{overflow-x:auto}
@@ -131,6 +137,23 @@ footer{margin-top:24px; padding-top:14px; border-top:1px solid var(--line); colo
   tbody td.val{padding:8px 7px}
 }
 @media (prefers-reduced-motion:reduce){ *{transition:none !important} }
+@media print{
+  @page{ size:A4 landscape; margin:8mm }
+  *{ -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important }
+  body{ background:#fff }
+  .bar, #cnote, .events, .note, footer{ display:none !important }
+  .wrap{ max-width:none; padding:0 }
+  .hero{ margin-bottom:4px }
+  .legendchips{ margin:0 0 6px !important }
+  .scroll{ overflow:visible !important }
+  thead th, tbody th, td.sum, th.sum-h, .evrow td, tfoot th, tfoot td.sum{ position:static !important; box-shadow:none !important }
+  table{ font-size:8.5px }
+  .mhead{ min-width:0; padding:4px 3px }
+  tbody td.val{ padding:4px 4px }
+  .rowlab{ min-width:0; padding:4px 6px }
+  #chartCard{ border:0; padding:0 }
+  #chart{ height:130mm !important; width:100% !important }
+}
 </style>
 </head>
 <body>
@@ -150,7 +173,9 @@ footer{margin-top:24px; padding-top:14px; border-top:1px solid var(--line); colo
       <button id="uBlock" aria-pressed="true">Épület összesen</button>
       <button id="uApt" aria-pressed="false">Egy lakásra (/44)</button>
     </div>
+    <span id="uInfo" class="infodot" tabindex="0" role="button" aria-label="Miért csak tájékoztató?" data-note="Az egy lakásra eső érték csak tájékoztató átlag (havi közös költség ÷ 44). A tényleges összeg lakásonként eltér: a szemétszállítás a bejelentett személyek számától, a fűtés-elszámolás pedig a lakás alapterületétől függ."><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="8" r="6.3"/><path d="M8 7.3v4" stroke-linecap="round"/><circle cx="8" cy="4.8" r=".7" fill="currentColor" stroke="none"/></svg></span>
     <span class="hint">A <span class="num" style="color:var(--brass)">*</span>-gal jelölt cellákról megjegyzés érhető el.</span>
+    <button id="btnPdf" class="pdfbtn" title="A jelenlegi nézet mentése PDF-be (nyomtatás)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v8M5 7l3 3 3-3"/><path d="M2.5 12.5v1a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1v-1"/></svg>PDF</button>
   </div>
 
   <div id="tableCard" class="tablecard">
@@ -375,6 +400,16 @@ document.getElementById("vTable").onclick=()=>setView("table");
 document.getElementById("vChart").onclick=()=>setView("chart");
 document.getElementById("uBlock").onclick=()=>setUnit(false);
 document.getElementById("uApt").onclick=()=>setUnit(true);
+document.getElementById("btnPdf").onclick=()=>window.print();
+(function(){ const info=document.getElementById("uInfo"); if(!info) return;
+  const show=e=>{ cnote.textContent=info.dataset.note; cnote.style.opacity=1; moveNote(e); };
+  info.addEventListener("mouseover",show);
+  info.addEventListener("mousemove",e=>{ if(cnote.style.opacity==="1") moveNote(e); });
+  info.addEventListener("mouseout",()=>cnote.style.opacity=0);
+  info.addEventListener("focus",()=>{ const r=info.getBoundingClientRect(); cnote.textContent=info.dataset.note; cnote.style.opacity=1; moveNote({clientX:r.left,clientY:r.bottom}); });
+  info.addEventListener("blur",()=>cnote.style.opacity=0);
+  info.addEventListener("click",e=>{ show(e); clearTimeout(cnote._t); cnote._t=setTimeout(()=>cnote.style.opacity=0,4500); });
+})();
 window.addEventListener("resize",()=>{ if(view==="chart") buildChart(); });
 
 document.getElementById("gen").textContent=DATA.generated;
