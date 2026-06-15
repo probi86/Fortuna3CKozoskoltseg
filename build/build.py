@@ -31,7 +31,7 @@ META = [
  ("Stat de plata",  ("Stat de plată","bérek (vezetőség + takarítás)","apt")),
  ("Curatenie",      ("Curățenie","takarítás","apt")),
  ("Curatare teren", ("Curățare teren","terület-rendezés","apt")),
- ("Nagy Katalin",   ("Nagy Katalin","tömbház-felelős","apt")),
+ ("Tombhaz felelos",("tömbház-felelős","","apt")),
  ("Contambees",     ("Contambees","csíki könyvelő iroda","apt")),
  ("Bariera",        ("Barieră","sorompó – javítás","apt")),
  ("Acumulator lift",("Acumulator lift","felvonó akkumulátor","apt")),
@@ -49,7 +49,7 @@ SPLITNAME = {"apt":"Lakásonként (fix)","pers":"Személyenként","cpi":"Terüle
 def classify(d, c):
     d=d.upper(); c=c.upper()
     if "CURATARE TEREN" in d: return "Curatare teren"
-    if "KATALIN" in d: return "Nagy Katalin"
+    if "KATALIN" in d: return "Tombhaz felelos"
     if "STAT DE PLATA" in d: return "Stat de plata"
     if "BARIERA" in d: return "Bariera"
     if "COMISION" in d: return "Comision"
