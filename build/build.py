@@ -31,7 +31,7 @@ META = [
  ("Stat de plata",  ("Stat de plată","bérek (vezetőség + takarítás)","apt")),
  ("Curatenie",      ("Curățenie","takarítás","apt")),
  ("Curatare teren", ("Curățare teren","terület-rendezés","apt")),
- ("Tombhaz felelos",("tömbház-felelős","","apt")),
+ ("Tombhaz felelos",("Tömbház-felelős","","apt")),
  ("Contambees",     ("Contambees","csíki könyvelő iroda","apt")),
  ("Bariera",        ("Barieră","sorompó – javítás","apt")),
  ("Acumulator lift",("Acumulator lift","felvonó akkumulátor","apt")),
