@@ -6,18 +6,21 @@ Fortuna 3C — közös költségek weboldal újragenerálása.
 Mit csinál:
   1. Beolvassa a  ../szamlak/ÉÉÉÉ-HH.pdf  havi közös kimutatásokat (homefile „Tabel cheltuieli").
   2. Kinyeri minden PDF-ből a KÖZÖS tételeket (a víz/melegvíz/csatorna/fűtés-fogyasztás = egyéni, kimarad).
-  3. Legenerálja a  ../data.json  fájlt és beágyazza a  build/template.html  sablonba -> ../index.html.
+  3. CSAK az adatot frissíti: az ../index.html-ben a DATA:START…DATA:END jelölők közötti
+     `const DATA = {…}` blokkot cseréli ki helyben. A megjelenítést (HTML/CSS/JS, EVENTS,
+     CELLNOTES) közvetlenül az ../index.html-ben szerkeszd — nincs külön sablon.
 
 Havi teendő:  tedd be az új PDF-et ../szamlak/-ba (pl. 2026-05.pdf), majd:  python3 build.py
 Részletek:    lásd ../README.md
-Eseménysor:   a template.html tetején az EVENTS tömbben szerkeszthető.
 """
 import subprocess, re, json, os, glob, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 WEB  = os.path.dirname(HERE)
 SZAMLAK = os.path.join(WEB, "szamlak")
-TEMPLATE = os.path.join(HERE, "template.html")
+INDEX = os.path.join(WEB, "index.html")
+DATA_START = "/* === DATA:START (auto: build.py — ne szerkeszd kézzel) === */"
+DATA_END   = "/* === DATA:END === */"
 
 HUMON = ['jan','feb','már','ápr','máj','jún','júl','aug','szept','okt','nov','dec']
 
@@ -39,12 +42,15 @@ META = [
  ("Nexus",          ("Nexus","?","apt")),
  ("Comision",       ("Comision","kezelési díj","apt")),
  ("Electropower",   ("Electropower Market","?","apt")),
- ("Fond rulment",   ("Fond rulment","működési tartalék","apt")),
- ("Fond reparatii", ("Fond de reparații","javítási alap","cpi")),
+ ("Fond rulment",   ("Fond rulment","tartalékalap, ~10 lej/befizetés","fund")),
+ ("Fond reparatii", ("Fond de reparații","javítási alap, terület szerint","fund")),
 ]
 ROWS = [k for k,_ in META]
-COMMON = set(ROWS) - {"Futes DIF"}
-SPLITNAME = {"apt":"Lakásonként (fix)","pers":"Személyenként","cpi":"Terület szerint (CPI)"}
+FUNDS = {"Fond rulment","Fond reparatii"}      # lakásonkénti alap-befizetés, NEM szétosztott közös költség
+COST_ROWS = [r for r in ROWS if r not in FUNDS]
+COMMON = set(ROWS) - {"Futes DIF"} - FUNDS
+SPLITNAME = {"apt":"Lakásonként (fix)","pers":"Személyenként","cpi":"Terület szerint (CPI)",
+             "fund":"Lakásonkénti alap-befizetés"}
 
 def classify(d, c):
     d=d.upper(); c=c.upper()
@@ -182,7 +188,7 @@ def main():
         if key=="Futes DIF":   # szolgáltató + időszak tooltip a nem-nulla elszámolás-celláknál
             row["cellnotes"]={codes[i]:heat[i] for i in range(len(M)) if abs(vals[i])>=0.5 and heat[i]}
         rows.append(row)
-    colTot=[round(sum(m[r] for r in ROWS),2) for m in M]
+    colTot=[round(sum(m[r] for r in COST_ROWS),2) for m in M]   # közös költség (fondok nélkül)
     grand=round(sum(colTot),2)
     top=max(rows,key=lambda x:x["total"])
     today = subprocess.run(["date","+%Y-%m-%d"],capture_output=True,text=True).stdout.strip()
@@ -190,16 +196,19 @@ def main():
           "topName":top["name"],"topNote":top["note"],"topTotal":top["total"],
           "topPct":round(top["total"]/grand*100)}
 
-    with open(os.path.join(WEB,"data.json"),"w",encoding="utf-8") as f:
-        json.dump(data,f,ensure_ascii=False)
-    tpl=open(TEMPLATE,encoding="utf-8").read()
-    html=tpl.replace("__DATA__", json.dumps(data,ensure_ascii=False))
-    with open(os.path.join(WEB,"index.html"),"w",encoding="utf-8") as f:
+    # A const DATA blokk helyben cseréje az index.html-ben (a megjelenítést közvetlenül szerkesztjük).
+    html=open(INDEX,encoding="utf-8").read()
+    if DATA_START not in html or DATA_END not in html:
+        sys.exit("Hiányzó DATA:START / DATA:END jelölő az index.html-ben — nem tudom hova illeszteni az adatot.")
+    block=DATA_START+"\nconst DATA = "+json.dumps(data,ensure_ascii=False)+";\n"+DATA_END
+    i=html.index(DATA_START); j=html.index(DATA_END)+len(DATA_END)
+    html=html[:i]+block+html[j:]
+    with open(INDEX,"w",encoding="utf-8") as f:
         f.write(html)
 
     print(f"OK · {len(months)} hónap ({months[0]['file']} … {months[-1]['file']})")
     print(f"   közös összesen: {grand:,.0f} lej · legnagyobb: {top['name']} ({data['topPct']}%)")
-    print(f"   frissítve: index.html + data.json")
+    print(f"   frissítve: index.html (const DATA blokk)")
 
 if __name__=="__main__":
     main()
