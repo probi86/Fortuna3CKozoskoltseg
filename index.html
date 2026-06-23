@@ -45,9 +45,11 @@ h1{font-family:"Space Grotesk",sans-serif; font-weight:700; font-size:clamp(26px
 .infodot{display:inline-flex; align-items:center; color:var(--muted); cursor:help; padding:2px; margin-left:-4px}
 .infodot:hover, .infodot:focus-visible{color:var(--blue); outline:none}
 .infodot svg{width:16px; height:16px}
-.cpisel{display:inline-flex; align-items:center; font-size:13px; color:var(--muted)}
-.cpisel select{font:inherit; font-size:13px; color:var(--ink); border:1px solid var(--line); background:var(--panel); border-radius:999px; padding:6px 11px; cursor:pointer}
+.cpisel{display:inline-flex; align-items:center; gap:7px; font-size:13px; color:var(--muted)}
+.cpisel select{font:inherit; font-size:13px; font-weight:500; color:var(--ink); border:1px solid var(--line); border-radius:999px; padding:7px 30px 7px 13px; cursor:pointer; appearance:none; -webkit-appearance:none; -moz-appearance:none; background:var(--panel) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 16 16' fill='none' stroke='%23626c7d' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E") no-repeat right 11px center}
+.cpisel select:hover{border-color:#cdc8bb}
 .cpisel select:focus-visible{outline:2px solid var(--blue); outline-offset:2px}
+.cpisel select.on{border-color:var(--brass); font-weight:600; background-color:#fbf6ea}
 
 .tablecard{background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); overflow:hidden}
 .scroll{overflow-x:auto}
@@ -447,6 +449,7 @@ document.getElementById("uApt").onclick=()=>setUnit(true);
   CPI_TYPES.forEach(t=>{ const o=document.createElement("option"); o.value=t.cpi;
     o.textContent=`${t.lab} (CPI ${t.cpi.toFixed(2).replace(".",",")})`; sel.appendChild(o); });
   sel.onchange=()=>{ selCPI = sel.value===""? null : parseFloat(sel.value);
+    sel.classList.toggle("on", selCPI!=null);
     if(selCPI!=null && !perApt) setUnit(true);          // lakás választása → lakás-nézet
     else if(view==="table") buildTable(); };
 })();
