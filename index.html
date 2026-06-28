@@ -423,6 +423,7 @@ function renderEvents(){
 function renderNote(){
   document.getElementById("note").innerHTML=
     `<b>Hogyan olvasd:</b> a tételek mellett a kis négyzet az <b>elosztás módját</b> jelzi. A „<b>Fűtés-elszámolás</b>” a fűtés terület-arányos regularizációja — ez ingadozik a legjobban, akár negatív is lehet. `+
+    `A <b>közös fűtés</b> a Solprim gázszámla terület-arányosan szétosztott része; pl. 2026. májusban a 3 959 lejes gázszámla = meleg víz 1 320 + mért fűtés 650 + közös különbözet 1 989 — a mért egyéni fűtés a legtöbb lakásnál szinte 0, a közös különbözet mégis ~2000. (Az áprilisi vitatott elszámolást a Solprim 19 140 → 17 356-ra csökkentette.) `+
     `<span id="noteChart" class="hide">A grafikon fölötti színes gombokra kattintva bármelyik tétel megjeleníthető vagy elrejthető. </span>`+
     `Az „<b>Egy lakásra (/44)</b>” nézetben a <b>~</b> jel átlagot jelez: ott a tényleges összeg <b>lakásonként eltér</b> — a szemét a bejelentett személyszámtól, a fűtés-elszámolás és a Fond reparații a lakás alapterületétől függ. A fix tételeknél (sárga pötty) a /44 pontos. Válaszd ki a lakásod a „<b>Lakásom</b>” legördülőben (a CPI a számládon szerepel), és a <b>közös fűtés + javítási alap</b> a te lakásodra <b>pontosan</b> jelenik meg (~ helyett). `+
     `A két <b>tartalékalap</b> (<b>Fond rulment</b>, <b>Fond reparații</b>) nem közös költség, hanem lakásonkénti befizetés, ezért <b>nincs a „Közös összesen”-ben</b>; a Fond rulment lakásonként a tényleges <b>~10 lej</b>/befizetés.`;
