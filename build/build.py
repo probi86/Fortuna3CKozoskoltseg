@@ -31,10 +31,10 @@ HUMON = ['jan','feb','már','ápr','máj','jún','júl','aug','szept','okt','nov
 
 # A 16 KÖZÖS tétel: kulcs -> (megjelenített név, magyar megjegyzés, elosztás: apt|pers|cpi)
 META = [
- ("Curent scara",   ("Curent scara","közös villany","apt")),
- ("Salubritate",    ("Salubritate","szemét, heti többszöri","pers")),
- ("Futes DIF",      ("Încălzire diferență","fűtés-elszámolás","cpi")),
- ("Lift",           ("Lift","","apt")),
+ ("Curent scara",   ("Curent scara","közös villany — Harghita Energy","apt")),
+ ("Salubritate",    ("Salubritate","szemét, heti többszöri — RDE Harghita","pers")),
+ ("Futes DIF",      ("Încălzire diferență","fűtés-elszámolás — Solprim","cpi")),
+ ("Lift",           ("Lift","OTIS Lift","apt")),
  ("Administrare",   ("Administrare","","apt")),
  ("Stat de plata",  ("Stat de plată","bérek (vezetőség + takarítás)","apt")),
  ("Curatenie",      ("Curățenie","takarítás","apt")),
@@ -46,7 +46,7 @@ META = [
  ("Homefile",       ("Homefile","számlázó rendszer","apt")),
  ("Nexus",          ("PSI","tűzvédelem (előtte Nexus)","apt")),
  ("Comision",       ("Comision","kezelési díj","apt")),
- ("Electropower",   ("Electropower Market","?","apt")),
+ ("Electropower",   ("Electropower Market","Electropower Market SRL","apt")),
  ("Fond rulment",   ("Fond rulment","tartalékalap, ~10 lej/befizetés","fund")),
  ("Fond reparatii", ("Fond de reparații","javítási alap, terület szerint","fund")),
 ]
