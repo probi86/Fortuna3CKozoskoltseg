@@ -22,6 +22,11 @@ INDEX = os.path.join(WEB, "index.html")
 DATA_START = "/* === DATA:START (auto: build.py — ne szerkeszd kézzel) === */"
 DATA_END   = "/* === DATA:END === */"
 
+# Ahol a havi PDF-export LEVÁGTA a fond oszlopokat (jobb szél), itt add meg kézzel a
+# havi „Lună" befizetést:  "ÉÉÉÉ-HH": (fond_rulment, fond_reparatii).  A teljes szöveges
+# kimutatás Total sorából olvasható ki.
+FOND_OVERRIDE = {"2026-05": (440.0, 344.30)}
+
 HUMON = ['jan','feb','már','ápr','máj','jún','júl','aug','szept','okt','nov','dec']
 
 # A 16 KÖZÖS tétel: kulcs -> (megjelenített név, magyar megjegyzés, elosztás: apt|pers|cpi)
@@ -39,7 +44,7 @@ META = [
  ("Bariera",        ("Barieră","sorompó – javítás","apt")),
  ("Acumulator lift",("Acumulator lift","felvonó akkumulátor","apt")),
  ("Homefile",       ("Homefile","számlázó rendszer","apt")),
- ("Nexus",          ("Nexus","?","apt")),
+ ("Nexus",          ("PSI","tűzvédelem (előtte Nexus)","apt")),
  ("Comision",       ("Comision","kezelési díj","apt")),
  ("Electropower",   ("Electropower Market","?","apt")),
  ("Fond rulment",   ("Fond rulment","tartalékalap, ~10 lej/befizetés","fund")),
@@ -59,9 +64,9 @@ def classify(d, c):
     if "STAT DE PLATA" in d: return "Stat de plata"
     if "BARIERA" in d: return "Bariera"
     if "COMISION" in d: return "Comision"
-    if "CONTAMBEES" in d: return "Contambees"
+    if "CONTAMBEES" in d or "CONTABIL" in d: return "Contambees"
     if "HOMEFILE" in d: return "Homefile"
-    if "NEXUS" in d: return "Nexus"
+    if "NEXUS" in d or "PSI" in d: return "Nexus"
     if "ELECTROPOWER" in d: return "Electropower"
     if "ACUMULATOR" in d: return "Acumulator lift"
     if "CURATENIE" in d: return "Curatenie"
@@ -177,6 +182,8 @@ def main():
                        "full":f"{yyyy}. {HUMON[mi]}","file":full})
         vals, hn = extract(p)
         vals["Fond rulment"], vals["Fond reparatii"] = extract_fonds(p)
+        if full in FOND_OVERRIDE:
+            vals["Fond rulment"], vals["Fond reparatii"] = FOND_OVERRIDE[full]
         M.append(vals); heat.append(hn)
 
     codes=[mo["code"] for mo in months]
