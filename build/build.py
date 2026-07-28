@@ -25,7 +25,7 @@ DATA_END   = "/* === DATA:END === */"
 # Ahol a havi PDF-export LEVÁGTA a fond oszlopokat (jobb szél), itt add meg kézzel a
 # havi „Lună" befizetést:  "ÉÉÉÉ-HH": (fond_rulment, fond_reparatii).  A teljes szöveges
 # kimutatás Total sorából olvasható ki.
-FOND_OVERRIDE = {"2026-05": (440.0, 344.30)}
+FOND_OVERRIDE = {"2026-05": (440.0, 344.30), "2026-06": (440.0, 344.30)}
 
 HUMON = ['jan','feb','már','ápr','máj','jún','júl','aug','szept','okt','nov','dec']
 
@@ -99,7 +99,10 @@ ROMON = {"IANUARIE":"január","FEBRUARIE":"február","MARTIE":"március","APRILI
 def heat_note(heat_denums, dif_denums):
     """A fűtés-elszámoláshoz: szolgáltató + elszámolt időszak a sorok megnevezéséből."""
     blob = " ".join(heat_denums).upper()
-    sup = "Solprim" if ("SOLPRIM" in blob or "SOPLRIM" in blob) else ("E.ON" if ("E.ON" in blob or "EON" in blob) else None)
+    sups = []
+    if "SOLPRIM" in blob or "SOPLRIM" in blob: sups.append("Solprim")
+    if "E.ON" in blob or "EON" in blob: sups.append("E.ON")
+    sup = " + ".join(sups)
     text = " ".join(dif_denums or heat_denums).upper()
     toks = re.findall(r"IANUARIE|FEBRUARIE|MARTIE|APRILIE|MAI|IUNIE|IULIE|AUGUST|SEPTEMBRIE|OCTOMBRIE|NOIEMBRIE|DECEMBRIE", text)
     seen=[]
@@ -111,10 +114,15 @@ def heat_note(heat_denums, dif_denums):
     if months_hu: bits.append("elszámolt időszak: "+"–".join(months_hu))
     return " · ".join(bits)
 
-def extract(pdf):
-    """Egy havi PDF-ből a közös tételek {kulcs: érték} + a fűtés-jegyzet."""
-    txt = subprocess.run(["pdftotext","-layout",pdf,"-"],
-                         capture_output=True, text=True).stdout
+def extract(src):
+    """Egy havi PDF-ből (vagy kimásolt tétel-összesítés .txt-ből) a közös tételek
+    {kulcs: érték} + a fűtés-jegyzet. A .txt sorai: denumire  coloana  …  érték lei
+    (2+ szóközzel elválasztva, mint a pdftotext -layout kimenete)."""
+    if src.endswith(".txt"):
+        txt = open(src, encoding="utf-8").read()
+    else:
+        txt = subprocess.run(["pdftotext","-layout",src,"-"],
+                             capture_output=True, text=True).stdout
     out = {r:0.0 for r in ROWS}
     heat_denums=[]; dif_denums=[]
     for line in txt.splitlines():
@@ -137,6 +145,7 @@ def extract_fonds(pdf):
     """Fond rulment / fond de reparații havi összege a lakáslista Total sorából.
     pdftotext -tsv koordinátákból: fond-fejléc x-tartomány -> Lună aloszlop ->
     a Total sor odaeső száma. Régi (fond nélküli) PDF-nél (0.0, 0.0)."""
+    if pdf.endswith(".txt"): return 0.0, 0.0   # szöveges forrásnál FOND_OVERRIDE ad értéket
     tsv = subprocess.run(["pdftotext","-tsv",pdf,"-"], capture_output=True, text=True).stdout
     words=[]
     for ln in tsv.splitlines()[1:]:
@@ -171,9 +180,11 @@ def extract_fonds(pdf):
     return round(out["RULMENT"],2), round(out["REPARATII"],2)
 
 def main():
-    pdfs = sorted(glob.glob(os.path.join(SZAMLAK, "[0-9][0-9][0-9][0-9]-[0-9][0-9].pdf")))
+    pdfs = sorted(glob.glob(os.path.join(SZAMLAK, "[0-9][0-9][0-9][0-9]-[0-9][0-9].pdf"))
+                + glob.glob(os.path.join(SZAMLAK, "[0-9][0-9][0-9][0-9]-[0-9][0-9].txt")),
+                key=os.path.basename)
     if not pdfs:
-        sys.exit("Nincs PDF a szamlak/ mappában (ÉÉÉÉ-HH.pdf néven kell).")
+        sys.exit("Nincs PDF/txt a szamlak/ mappában (ÉÉÉÉ-HH.pdf vagy .txt néven kell).")
     months=[]; M=[]; heat=[]
     for p in pdfs:
         full = os.path.splitext(os.path.basename(p))[0]   # ÉÉÉÉ-HH
