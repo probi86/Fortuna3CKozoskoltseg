@@ -40,7 +40,7 @@ META = [
  ("Stat de plata",  ("Stat de plată","bérek (vezetőség + takarítás)","apt")),
  ("Curatenie",      ("Curățenie","takarítás","apt")),
  ("Curatare teren", ("Curățare teren","terület-rendezés","apt")),
- ("Tombhaz felelos",("Tömbház-felelős","havi 440 lej — 2026 februárjától mérőóra-leolvasás (Vízió Egyesület)","apt")),
+ ("Tombhaz felelos",("Tömbház-felelős","","apt")),
  ("Contambees",     ("Contambees","csíki könyvelő iroda","apt")),
  ("Bariera",        ("Barieră","sorompó – javítás","apt")),
  ("Szenzor",        ("Szenzor","mozgásérzékelő + kapcsolóóra — Electropower Market","apt")),
