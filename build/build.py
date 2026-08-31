@@ -25,7 +25,8 @@ DATA_END   = "/* === DATA:END === */"
 # Ahol a havi PDF-export LEVÁGTA a fond oszlopokat (jobb szél), itt add meg kézzel a
 # havi „Lună" befizetést:  "ÉÉÉÉ-HH": (fond_rulment, fond_reparatii).  A teljes szöveges
 # kimutatás Total sorából olvasható ki.
-FOND_OVERRIDE = {"2026-05": (440.0, 344.30), "2026-06": (440.0, 344.30)}
+FOND_OVERRIDE = {"2026-05": (440.0, 344.30), "2026-06": (440.0, 344.30),
+                 "2026-07": (440.0, 344.30)}
 
 HUMON = ['jan','feb','már','ápr','máj','jún','júl','aug','szept','okt','nov','dec']
 
@@ -39,12 +40,16 @@ META = [
  ("Stat de plata",  ("Stat de plată","bérek (vezetőség + takarítás)","apt")),
  ("Curatenie",      ("Curățenie","takarítás","apt")),
  ("Curatare teren", ("Curățare teren","terület-rendezés","apt")),
- ("Tombhaz felelos",("Tömbház-felelős","","apt")),
+ ("Tombhaz felelos",("Tömbház-felelős","havi 440 lej — 2026 februárjától mérőóra-leolvasás (Vízió Egyesület)","apt")),
  ("Contambees",     ("Contambees","csíki könyvelő iroda","apt")),
  ("Bariera",        ("Barieră","sorompó – javítás","apt")),
+ ("Szenzor",        ("Szenzor","mozgásérzékelő + kapcsolóóra — Electropower Market","apt")),
+ ("Sycomat",        ("Sycomat","LED reflektorok — Sycomat Electro Technic","apt")),
  ("Acumulator lift",("Acumulator lift","felvonó akkumulátor","apt")),
  ("Homefile",       ("Homefile","számlázó rendszer","apt")),
+ ("Kozjegyzo",      ("Közjegyző","vezetőségi tagok újraválasztása","apt")),
  ("Nexus",          ("PSI","tűzvédelem (előtte Nexus)","apt")),
+ ("Maboprof",       ("Maboprof","fűnyíró szerviz — Maboprof Vema Service","apt")),
  ("Comision",       ("Comision","kezelési díj","apt")),
  ("Electropower",   ("Electropower Market","Electropower Market SRL","apt")),
  ("Fond rulment",   ("Fond rulment","tartalékalap, ~10 lej/befizetés","fund")),
@@ -54,6 +59,7 @@ ROWS = [k for k,_ in META]
 FUNDS = {"Fond rulment","Fond reparatii"}      # lakásonkénti alap-befizetés, NEM szétosztott közös költség
 COST_ROWS = [r for r in ROWS if r not in FUNDS]
 COMMON = set(ROWS) - {"Futes DIF"} - FUNDS
+UNKNOWN = []          # a besorolatlan (ismeretlen nevű) tételek — a build végén figyelmeztetünk rájuk
 SPLITNAME = {"apt":"Lakásonként (fix)","pers":"Személyenként","cpi":"Terület szerint (CPI)",
              "fund":"Lakásonkénti alap-befizetés"}
 
@@ -68,6 +74,10 @@ def classify(d, c):
     if "HOMEFILE" in d: return "Homefile"
     if "NEXUS" in d or "PSI" in d: return "Nexus"
     if "ELECTROPOWER" in d: return "Electropower"
+    if "KOZJEGYZO" in d: return "Kozjegyzo"
+    if "SYCOMAT" in d: return "Sycomat"
+    if "MABOPROF" in d or "FUNYIRO" in d: return "Maboprof"
+    if "SZENZOR" in d: return "Szenzor"
     if "ACUMULATOR" in d: return "Acumulator lift"
     if "CURATENIE" in d: return "Curatenie"
     if d.strip().startswith("ADMINISTRARE"): return "Administrare"
@@ -134,6 +144,8 @@ def extract(src):
         d=parts[0]; val=float(nums[-1]); cat=classify(d, parts[1])
         if cat in COMMON:
             out[cat]+=val
+        elif cat=="x":
+            UNKNOWN.append((os.path.basename(src), d, val))
         elif cat=="Incalzire":
             heat_denums.append(d)
             if ("CPI" in line.upper()) or ("DIF" in d.upper()):
@@ -227,6 +239,8 @@ def main():
     print(f"OK · {len(months)} hónap ({months[0]['file']} … {months[-1]['file']})")
     print(f"   közös összesen: {grand:,.0f} lej · legnagyobb: {top['name']} ({data['topPct']}%)")
     print(f"   frissítve: index.html (const DATA blokk)")
+    for f,d,v in UNKNOWN:
+        print(f"   FIGYELEM · besorolatlan tétel (kimarad az oldalról): {f} · {d} · {v:.2f} lej")
 
 if __name__=="__main__":
     main()
