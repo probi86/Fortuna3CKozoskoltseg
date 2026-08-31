@@ -124,6 +124,26 @@ def heat_note(heat_denums, dif_denums):
     if months_hu: bits.append("elszámolt időszak: "+"–".join(months_hu))
     return " · ".join(bits)
 
+def hu(x, dec=2):
+    """Magyar számformátum: tizedesvessző, ezres szóköz."""
+    t=f"{x:,.{dec}f}".replace(",", " ").replace(".", ",")
+    return t
+
+def salub_note(lines):
+    """A Salubritate sor cella-jegyzete: hány főre osztva, milyen egységáron.
+    lines: [(sor szövege, fő, lej/fő, érték)] az adott hónap szemét-sorai."""
+    if not lines: return ""
+    main=max(lines, key=lambda x: x[3])
+    bits=[f"{main[1]} fő × {hu(main[2])} lej/fő"]
+    for ln,pers,rate,val in lines:
+        if (ln,pers,rate,val)==main: continue
+        lab="áfa" if "TVA" in ln.upper() else "korrekció"
+        sign="+" if rate>=0 else "−"
+        bits.append(f"{lab} {sign}{hu(abs(rate))} lej/fő")
+    tot=sum(x[3] for x in lines)
+    bits.append(f"összesen {hu(tot,0)} lej")
+    return " · ".join(bits)
+
 def extract(src):
     """Egy havi PDF-ből (vagy kimásolt tétel-összesítés .txt-ből) a közös tételek
     {kulcs: érték} + a fűtés-jegyzet. A .txt sorai: denumire  coloana  …  érték lei
@@ -134,7 +154,7 @@ def extract(src):
         txt = subprocess.run(["pdftotext","-layout",src,"-"],
                              capture_output=True, text=True).stdout
     out = {r:0.0 for r in ROWS}
-    heat_denums=[]; dif_denums=[]
+    heat_denums=[]; dif_denums=[]; salub_lines=[]
     for line in txt.splitlines():
         if " lei" not in line: continue
         parts=[p for p in re.split(r"\s{2,}", line.strip()) if p]
@@ -144,6 +164,10 @@ def extract(src):
         d=parts[0]; val=float(nums[-1]); cat=classify(d, parts[1])
         if cat in COMMON:
             out[cat]+=val
+            if cat=="Salubritate":
+                mp=re.search(r"(-?[\d.]+)\s*pers", line)
+                mr=re.search(r"(-?[\d.]+)\s*lei\s*/\s*pers", line)
+                if mp and mr: salub_lines.append((line, int(float(mp.group(1))), float(mr.group(1)), val))
         elif cat=="x":
             UNKNOWN.append((os.path.basename(src), d, val))
         elif cat=="Incalzire":
@@ -151,7 +175,7 @@ def extract(src):
             if ("CPI" in line.upper()) or ("DIF" in d.upper()):
                 out["Futes DIF"]+=val   # csak a terület-arányos elszámolás (közös), a fogyasztás egyéni
                 dif_denums.append(d)
-    return out, heat_note(heat_denums, dif_denums)
+    return out, heat_note(heat_denums, dif_denums), salub_note(salub_lines)
 
 def extract_fonds(pdf):
     """Fond rulment / fond de reparații havi összege a lakáslista Total sorából.
@@ -197,17 +221,17 @@ def main():
                 key=os.path.basename)
     if not pdfs:
         sys.exit("Nincs PDF/txt a szamlak/ mappában (ÉÉÉÉ-HH.pdf vagy .txt néven kell).")
-    months=[]; M=[]; heat=[]
+    months=[]; M=[]; heat=[]; salub=[]
     for p in pdfs:
         full = os.path.splitext(os.path.basename(p))[0]   # ÉÉÉÉ-HH
         yyyy, mm = full.split("-"); yy = yyyy[2:]; mi=int(mm)-1
         months.append({"code":f"{yy}-{mm}","abbr":HUMON[mi],"year":"’"+yy,
                        "full":f"{yyyy}. {HUMON[mi]}","file":full})
-        vals, hn = extract(p)
+        vals, hn, sn = extract(p)
         vals["Fond rulment"], vals["Fond reparatii"] = extract_fonds(p)
         if full in FOND_OVERRIDE:
             vals["Fond rulment"], vals["Fond reparatii"] = FOND_OVERRIDE[full]
-        M.append(vals); heat.append(hn)
+        M.append(vals); heat.append(hn); salub.append(sn)
 
     codes=[mo["code"] for mo in months]
     rows=[]
@@ -215,6 +239,8 @@ def main():
         vals=[round(m[key],2) for m in M]
         row={"key":key,"name":name,"note":note,"split":sp,
              "splitName":SPLITNAME[sp],"vals":vals,"total":round(sum(vals),2)}
+        if key=="Salubritate":   # hány főre osztva, milyen egységáron — minden hónapra
+            row["cellnotes"]={codes[i]:salub[i] for i in range(len(M)) if salub[i]}
         if key=="Futes DIF":   # szolgáltató + időszak tooltip a nem-nulla elszámolás-celláknál
             row["cellnotes"]={codes[i]:heat[i] for i in range(len(M)) if abs(vals[i])>=0.5 and heat[i]}
         rows.append(row)
