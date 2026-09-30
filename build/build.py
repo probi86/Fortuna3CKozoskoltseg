@@ -26,7 +26,7 @@ DATA_END   = "/* === DATA:END === */"
 # havi „Lună" befizetést:  "ÉÉÉÉ-HH": (fond_rulment, fond_reparatii).  A teljes szöveges
 # kimutatás Total sorából olvasható ki.
 FOND_OVERRIDE = {"2026-05": (440.0, 344.30), "2026-06": (440.0, 344.30),
-                 "2026-07": (440.0, 344.30)}
+                 "2026-07": (440.0, 344.30), "2026-08": (440.0, 344.30)}
 
 HUMON = ['jan','feb','már','ápr','máj','jún','júl','aug','szept','okt','nov','dec']
 
@@ -49,7 +49,7 @@ META = [
  ("Homefile",       ("Homefile","számlázó rendszer","apt")),
  ("Kozjegyzo",      ("Közjegyző","vezetőségi tagok újraválasztása","apt")),
  ("Nexus",          ("PSI","tűzvédelem (előtte Nexus)","apt")),
- ("Maboprof",       ("Maboprof","fűnyíró szerviz — Maboprof Vema Service","apt")),
+ ("Maboprof",       ("Maboprof","fűnyíró szerviz, alkatrész — Maboprof Vema Service","apt")),
  ("Comision",       ("Comision","kezelési díj","apt")),
  ("Electropower",   ("Electropower Market","Electropower Market SRL","apt")),
  ("Fond rulment",   ("Fond rulment","tartalékalap, ~10 lej/befizetés","fund")),
@@ -76,7 +76,7 @@ def classify(d, c):
     if "ELECTROPOWER" in d: return "Electropower"
     if "KOZJEGYZO" in d: return "Kozjegyzo"
     if "SYCOMAT" in d: return "Sycomat"
-    if "MABOPROF" in d or "FUNYIRO" in d: return "Maboprof"
+    if "MABOPROF" in d or "FUNYIRO" in d or "GAZON" in d: return "Maboprof"
     if "SZENZOR" in d: return "Szenzor"
     if "ACUMULATOR" in d: return "Acumulator lift"
     if "CURATENIE" in d: return "Curatenie"
