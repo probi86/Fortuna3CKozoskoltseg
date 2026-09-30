@@ -32,7 +32,7 @@ HUMON = ['jan','feb','már','ápr','máj','jún','júl','aug','szept','okt','nov
 
 # A 16 KÖZÖS tétel: kulcs -> (megjelenített név, magyar megjegyzés, elosztás: apt|pers|cpi)
 META = [
- ("Curent scara",   ("Curent scara","közös villany — Harghita Energy","apt")),
+ ("Curent scara",   ("Curent scara","közös villany — Harghita Energy → E.ON (2026-07-től)","apt")),
  ("Salubritate",    ("Salubritate","szemét, heti többszöri — RDE Harghita","pers")),
  ("Futes DIF",      ("Încălzire diferență","fűtés-elszámolás — Solprim","cpi")),
  ("Lift",           ("Lift","OTIS Lift","apt")),
