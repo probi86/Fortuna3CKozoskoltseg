@@ -26,7 +26,8 @@ DATA_END   = "/* === DATA:END === */"
 # havi „Lună" befizetést:  "ÉÉÉÉ-HH": (fond_rulment, fond_reparatii).  A teljes szöveges
 # kimutatás Total sorából olvasható ki.
 FOND_OVERRIDE = {"2026-05": (440.0, 344.30), "2026-06": (440.0, 344.30),
-                 "2026-07": (440.0, 344.30), "2026-08": (440.0, 344.30)}
+                 "2026-07": (440.0, 344.30), "2026-08": (440.0, 344.30),
+                 "2026-09": (440.0, 344.30)}
 
 HUMON = ['jan','feb','már','ápr','máj','jún','júl','aug','szept','okt','nov','dec']
 
@@ -46,6 +47,7 @@ META = [
  ("Szenzor",        ("Szenzor","mozgásérzékelő + kapcsolóóra — Electropower Market","apt")),
  ("Sycomat",        ("Sycomat","LED reflektorok — Sycomat Electro Technic","apt")),
  ("Acumulator lift",("Acumulator lift","felvonó akkumulátor","apt")),
+ ("Baterie",        ("Baterie","lítium elemek (44 db) — Milnik Store","apt")),
  ("Homefile",       ("Homefile","számlázó rendszer","apt")),
  ("Kozjegyzo",      ("Közjegyző","vezetőségi tagok újraválasztása","apt")),
  ("Nexus",          ("PSI","tűzvédelem (előtte Nexus)","apt")),
@@ -79,6 +81,7 @@ def classify(d, c):
     if "MABOPROF" in d or "FUNYIRO" in d or "GAZON" in d: return "Maboprof"
     if "SZENZOR" in d: return "Szenzor"
     if "ACUMULATOR" in d: return "Acumulator lift"
+    if "BATERIE" in d: return "Baterie"
     if "CURATENIE" in d: return "Curatenie"
     if d.strip().startswith("ADMINISTRARE"): return "Administrare"
     if c.startswith(("APA CANAL","CANALIZ")): return "Canalizare"
